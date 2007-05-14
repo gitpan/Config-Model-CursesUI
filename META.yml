@@ -1,0 +1,17 @@
+---
+name: Config-Model-CursesUI
+version: 1.003
+author:
+  - Dominique Dumont (ddumont at cpan dot org)
+abstract: Curses interface for Config::Model
+license: lgpl
+requires:
+  Config::Model: 0.608
+  Curses::UI: 0.95
+  Exception::Class: 0
+  Log::Log4perl: 0
+provides:
+  Config::Model::CursesUI:
+    file: lib/Config/Model/CursesUI.pm
+    version: 1.003
+generated_by: Module::Build version 0.26
