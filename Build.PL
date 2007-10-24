@@ -1,7 +1,7 @@
 # $Author: ddumont $
-# $Date: 2007/05/09 12:19:10 $
+# $Date: 2007/05/10 12:04:28 $
 # $Name:  $
-# $Revision: 1.1 $
+# $Revision: 1.2 $
 
 #    Copyright (c) 2007 Dominique Dumont.
 #
@@ -24,6 +24,8 @@
 
 use Module::Build;
 
+require 5.006 ;
+
 my $build = Module::Build->new
   (
    module_name => 'Config::Model::CursesUI',
@@ -31,10 +33,10 @@ my $build = Module::Build->new
    dist_abstract => "Curses interface for Config::Model",
    dist_author  => "Dominique Dumont (ddumont at cpan dot org)",
    requires => {
-		'Config::Model'   => '0.608',
+		'Config::Model'    => '0.614',
 		'Exception::Class' => 0,
-		'Curses::UI' => '0.95',
-		'Log::Log4perl'   => 0 ,
+		'Curses::UI'       => '0.95',
+		'Log::Log4perl'    => 0 ,
 	       },
    add_to_cleanup => [qw/stderr.log wr_data/] ,
   );

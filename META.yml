@@ -1,17 +1,22 @@
 ---
 name: Config-Model-CursesUI
-version: 1.003
+version: 1.004
 author:
   - Dominique Dumont (ddumont at cpan dot org)
 abstract: Curses interface for Config::Model
 license: lgpl
+resources:
+  license: http://opensource.org/licenses/artistic-license.php
 requires:
-  Config::Model: 0.608
+  Config::Model: 0.614
   Curses::UI: 0.95
   Exception::Class: 0
   Log::Log4perl: 0
 provides:
   Config::Model::CursesUI:
     file: lib/Config/Model/CursesUI.pm
-    version: 1.003
-generated_by: Module::Build version 0.26
+    version: 1.004
+generated_by: Module::Build version 0.2808
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.2.html
+  version: 1.2

@@ -1,8 +1,8 @@
 # -*- cperl -*-
 # $Author: ddumont $
-# $Date: 2007/05/09 12:19:12 $
+# $Date: 2007/10/24 15:50:12 $
 # $Name:  $
-# $Revision: 1.1 $
+# $Revision: 1.3 $
 
 use warnings FATAL => qw(all);
 use ExtUtils::testlib;
@@ -44,11 +44,13 @@ open STDERR, ">&FH";
 
 warn "----\n";
 
+$inst->config_root->load("hash_a:foo=bar") ;
 
 if ($arg =~ /i/ ) {
     my $dialog = Config::Model::CursesUI-> new
       (
        permission => 'advanced',
+       debug => 1,
       ) ;
     $dialog->start( $model )  ;
 }
