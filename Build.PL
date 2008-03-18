@@ -1,7 +1,6 @@
 # $Author: ddumont $
-# $Date: 2008/02/15 12:18:11 $
-# $Name:  $
-# $Revision: 1.3 $
+# $Date: 2008-03-17 14:36:29 +0100 (Mon, 17 Mar 2008) $
+# $Revision: 544 $
 
 #    Copyright (c) 2007 Dominique Dumont.
 #
@@ -30,8 +29,9 @@ my $build = Module::Build->new
   (
    module_name => 'Config::Model::CursesUI',
    license => 'lgpl',
-   dist_abstract => "Curses interface for Config::Model",
+   dist_abstract => "Curses interface to edit config data through Config::Model",
    dist_author  => "Dominique Dumont (ddumont at cpan dot org)",
+   dist_version  => '1.006' ,
    requires => {
 		'Config::Model'    => '0.614',
 		'Exception::Class' => 0,
