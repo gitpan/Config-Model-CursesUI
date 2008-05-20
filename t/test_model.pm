@@ -1,8 +1,8 @@
 # -*- cperl -*-
 # $Author: ddumont $
-# $Date: 2008-03-17 14:36:29 +0100 (Mon, 17 Mar 2008) $
+# $Date: 2008-05-16 13:32:43 +0200 (Fri, 16 May 2008) $
 # $Name: not supported by cvs2svn $
-# $Revision: 544 $
+# $Revision: 668 $
 
 # this file is used by test script
 
@@ -93,10 +93,10 @@
   [
    name => 'Master',
 
-   read_config => 'cds',
-   read_config_dir => 'data' ,
+   read_config => { syntax => 'cds'},
+   read_config_dir =>'data' ,
 
-   write_config => 'cds',
+   write_config =>  { syntax =>'cds'},
    write_config_dir => 'wr_data',
 
    permission => [ [qw/tree_macro warp/] => 'advanced'] ,

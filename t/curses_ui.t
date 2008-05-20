@@ -1,8 +1,8 @@
 # -*- cperl -*-
 # $Author: ddumont $
-# $Date: 2008-03-17 14:36:29 +0100 (Mon, 17 Mar 2008) $
+# $Date: 2008-05-16 13:32:43 +0200 (Fri, 16 May 2008) $
 # $Name: not supported by cvs2svn $
-# $Revision: 544 $
+# $Revision: 668 $
 
 use warnings FATAL => qw(all);
 use ExtUtils::testlib;
@@ -30,7 +30,7 @@ warn "You can run the GUI with 'i' argument. E.g. 'perl t/curses_ui.t i'\n";
 
 ok(1,"Config::Model::CursesUI loaded") ;
 
-my $model = Config::Model -> new ;
+my $model = Config::Model -> new ( legacy => 'ignore' );
 
 my $inst = $model->instance (root_class_name => 'Master',
 		  model_file      => 't/test_model.pm',

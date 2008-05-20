@@ -1,6 +1,6 @@
 ---
 name: Config-Model-CursesUI
-version: 1.006
+version: 1.007
 author:
   - Dominique Dumont (ddumont at cpan dot org)
 abstract: Curses interface to edit config data through Config::Model
@@ -8,14 +8,14 @@ license: lgpl
 resources:
   license: http://opensource.org/licenses/lgpl-license.php
 requires:
-  Config::Model: 0.614
+  Config::Model: 0.623
   Curses::UI: 0.95
   Exception::Class: 0
   Log::Log4perl: 0
 provides:
   Config::Model::CursesUI:
     file: lib/Config/Model/CursesUI.pm
-    version: 1.0544
+    version: 1.0677
 generated_by: Module::Build version 0.280801
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
