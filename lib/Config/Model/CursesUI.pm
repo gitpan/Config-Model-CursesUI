@@ -1,25 +1,6 @@
 # $Author: ddumont $
-# $Date: 2008-05-20 13:02:22 +0200 (Tue, 20 May 2008) $
-# $Revision: 677 $
-
-#    Copyright (c) 2007-2008 Dominique Dumont.
-#
-#    This file is part of Config-Model-Curses-UI.
-#
-#    Config-Model-Curses-UI is free software; you can redistribute it
-#    and/or modify it under the terms of the GNU Lesser Public License
-#    as published by the Free Software Foundation; either version 2.1
-#    of the License, or (at your option) any later version.
-#
-#    Config-Model is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#    Lesser Public License for more details.
-#
-#    You should have received a copy of the GNU Lesser Public License
-#    along with Config-Model; if not, write to the Free Software
-#    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-#    02110-1301 USA
+# $Date: 2009-01-05 14:02:38 +0100 (Mon, 05 Jan 2009) $
+# $Revision: 825 $
 
 my $verb_wiz = 1 ;
 
@@ -29,7 +10,6 @@ use strict ;
 use Config::Model::Exception ;
 use Carp;
 use warnings FATAL => "all";
-use Error qw(:try);
 
 use Config::Model::ObjTreeScanner ;
 use Curses::UI ;
@@ -46,7 +26,7 @@ use Exception::Class
   ) ;
 
 use vars qw($VERSION) ;
-$VERSION = sprintf "1.%04d", q$Revision: 677 $ =~ /(\d+)/;
+$VERSION = '1.102';
 
 my @help_settings = qw/-bg green -fg black -border 1 
                        -titlereverse 0
@@ -798,33 +778,51 @@ sub display_check_list_element {
 
     my $win = $self->set_center_window("Check list");
 
-    my $listbox = $self->layout_checklist($win, $node,$element,@check_items) ;
+    $self->layout_checklist($win, $node,$element) ;
 
     $self->wrap_screen($node,$element) ;
     return $win ;
 }
 
 sub layout_checklist {
-    my ($self,$win,$node,$element,@check_indexes) = @_ ;
+    my ($self,$win,$node,$element) = @_ ;
 
-    my $y = 1 ;
     my $check_list_obj = $node->fetch_element($element) ;
 
-    $win->add(undef, 'Label', '-y' => $y   , -text => "Current value :");
+    my $notebook = $win->add(undef, 'Notebook', -intellidraw => 1);
 
-    my $cur_val_w 
-      = $win->add(undef, 'Label', '-y' => $y++ , '-x' => 16 );
+    my $content_page = $notebook->add_page('edit content');
+    $self->layout_checklist_editor($content_page,$node,$element) ;
 
-    $win->add(undef, 'Label', '-y' => $y++ , 
-	      -text => "Check one or more:");
+    if ($check_list_obj -> ordered ) {
+	my $lb ;
+	my $c_sub = sub {
+	    my @values = $check_list_obj->get_checked_list ;
+	    $lb->values(\@values) ;
+	};
+	my $order_page = $notebook->add_page('change order', 
+					     -on_activate => $c_sub ) ;
+	$lb = $self->layout_checklist_order($order_page,$node,$element) ;
+    }
 
+}
 
-    my %checked_hash = $check_list_obj->get_checked_list_as_hash ;
-    my @values = sort keys %checked_hash ;
+sub layout_checklist_info {
+    my ($self,$win,$node,$element, $yr,$text) = @_ ;
+    my $check_list_obj = $node->fetch_element($element) ;
+
+    $win->add(undef, 'Label', '-y' => $$yr   , -text => "Current value :");
+
+    my $cur_val_w
+      = $win->add(undef, 'Label', '-y' => $$yr++ , '-x' => 16 );
+
+    $win->add(undef, 'Label', '-y' => $$yr++ , -text => $text);
+
+    my @values = $check_list_obj->get_choice ;
 
     my $help_w = $win -> add ( undef, 'TextViewer',
 			     '-x' => 42 ,
-			     '-y' => $y ,
+			     '-y' => $$yr ,
 			     -width => 35,
 			     -text => $node->get_help($element) ,
 			     '-title' => 'Help on value',
@@ -836,6 +834,19 @@ sub layout_checklist {
 	$help_w->text($check_list_obj->get_help($choice)) ;
     } ;
 
+    return ($cur_val_w,$help_update) ;
+}
+
+sub layout_checklist_editor {
+    my ($self,$win,$node,$element) = @_ ;
+
+    my $y = 1 ;
+    my ($cur_val_w,$help_update)
+      = $self->layout_checklist_info($win,$node,$element,\$y,
+				     "Check one or more:" ) ;
+
+    my $check_list_obj = $node->fetch_element($element) ;
+    my @values = $check_list_obj->get_choice ;
     my $listbox = $win->add (
 			     'mylistbox', 'Listbox',
 			     -border     => 1,
@@ -873,7 +884,7 @@ sub layout_checklist {
     } ;
 
     my @buttons = (
-		   { -label => '< Enter value >', -onpress => $ok_sub } 
+		   { -label => '< Store >', -onpress => $ok_sub } 
 		  ) ;
 
     $self->add_std_button_with_help($win,$node,$element, @buttons ) ;
@@ -883,6 +894,67 @@ sub layout_checklist {
     return $listbox ;
 }
 
+sub layout_checklist_order {
+    my ($self,$win,$node,$element) = @_ ;
+
+    my $y = 1;
+    my ($cur_val_w,$help_update)
+      = $self->layout_checklist_info($win,$node,$element,\$y,
+				     "Current value :");
+
+    my $check_list_obj = $node->fetch_element($element) ;
+    my @values = $check_list_obj->get_checked_list ;
+    my $listbox = $win->add (
+			     'mylistbox', 'Listbox',
+			     -border     => 1,
+			     '-y'        => $y,
+			     -padbottom  => 1,
+			     -width      => 40 ,
+			     -title      => $element.' elements',
+			     -vscrollbar => 1,
+			     -onselchange   => $help_update ,
+			     -values     => \@values ,
+			    );
+
+    my $update_value = sub {
+	my $set  = shift ;
+	my @new_list = $check_list_obj->get_checked_list ;
+	$cur_val_w->text(join(",",$check_list_obj->get_checked_list)) ;
+	$listbox->values(\@new_list) ;
+	# Tk::ObjScanner::scan_object($listbox) ;
+	$listbox->set_selection($set) if defined $set ;
+	$listbox->draw ;
+    } ;
+
+    $win->onFocus(sub {$update_value->()} ) ; ;
+
+    my $up_sub = sub {
+	my ($item) = $listbox->get || return ; # no selection
+	my ($idx)  = $listbox->id  || return ; # first item selected
+	$check_list_obj->move_up($item) ;
+	$update_value->($idx - 1) ;
+    } ;
+
+    my $down_sub = sub {
+	my ($item) = $listbox->get || return ;
+	my ($idx)  = $listbox->id ;
+	my @new_list = $check_list_obj->get_checked_list ;
+	return if $idx >= $#new_list ; # last item selected
+	$check_list_obj->move_down($item) ;
+	$update_value->($idx + 1) ;
+    } ;
+
+    my @buttons = (
+		   { -label => '< up >', -onpress => $up_sub } ,
+		   { -label => '< down >', -onpress => $down_sub } ,
+		  ) ;
+
+    $self->add_std_button_with_help($win,$node,$element, @buttons ) ;
+
+    $listbox->focus ;
+
+    return $listbox ;
+}
 ## end check_list
 
 sub display_leaf {
@@ -917,21 +989,22 @@ sub set_leaf_value {
 sub try_it {
     my ($self,$sub) = @_ ;
 
-    try {
+    eval {
         &$sub ;
 	warn "try_it: call to sub succeeded\n" if $verb_wiz ;
-    } 
-    catch Config::Model::Exception::User with {
-	my $oops = shift ;
+    } ;
+
+    my $e ;
+    if ($e = Config::Model::Exception::User->caught()) {
+	my $oops = $e->error ;
 	$oops =~ s/\t//g;
 	chomp($oops) ;
 	$self->{cui}->error(-message => $oops ) ;
         return undef;
     }
-    otherwise {
-        my $oops = shift ;
-	warn "oops" ;
-        $self->{cui}->fatalerror("try_it: $oops") ;
+    elsif ($@) {
+	warn $@ ;
+        $self->{cui}->fatalerror("try_it: $@") ;
         # does not return ...
     } ;
 }
@@ -1122,7 +1195,7 @@ sub layout_string_value {
                   -text => "Enter new value:") ;
 
     my $editor = $win -> add ( undef,  
-			       $v_type eq 'uniline' ? 'TextEntry' : 'TextEditor',
+			       $v_type eq 'string' ? 'TextEditor' : 'TextEntry',
 			       -sbborder => 1,
 			       '-y' => 1,
 			       '-height' => $height,
@@ -1548,16 +1621,16 @@ sub display_view_list {
     my $view_scanner = Config::Model::ObjTreeScanner->new (@scan_args);
 
     my @leaves ;
-    try {
+    eval {
 	# perform the scan that fills @leaves
         $root->instance->push_no_value_check('fetch','store','type') ;
         $view_scanner-> scan_node(\@leaves, $root) ;
         $root->instance->pop_no_value_check ;
-    }
-    otherwise {
-        my $oops = shift ;
-	warn "$oops" ;
-        $self->{cui}->fatalerror("display_view_list: $oops") ;
+    } ;
+
+    if ($@) {
+	warn "$@" ;
+        $self->{cui}->fatalerror("display_view_list: $@") ;
     };
 
     my $idx = 0;
@@ -1634,16 +1707,16 @@ sub wizard {
     # reset location label
     $self->{loc_label}->text('') ;
 
-    try {
+    eval {
 	$self->wiz_walk( $stop_on_important , $root) ;
-    }
-    catch Config::Model::CursesUI::AbortWizard with {
+    } ;
+
+    if (Config::Model::CursesUI::AbortWizard->caught()) {
 	# ignored
     }
-    otherwise {
-	my $oops = shift ;
-	warn "$oops" ;
-	$self->{cui}->fatalerror("search: $oops") ;
+    elsif ($@) {
+	warn "$@" ;
+	$self->{cui}->fatalerror("search: $@") ;
     } ;
 
     $self->{start_config}->() ;
@@ -1786,18 +1859,16 @@ sub wiz_walk {
     $self->{wizard} = $root->instance->wizard_helper (@wiz_args);
 
     my $result;
-    try {
-      $self->{wizard}->start ;
+    eval {$self->{wizard}->start ;} ;
+
+    if (my $e = Config::Model::CursesUI::AbortWizard->caught()) {
+	$e -> throw ; # propagate up
     }
-    catch Config::Model::CursesUI::AbortWizard with {
-	shift -> throw ; # propagate up
-    }
-    otherwise {
+    elsif ($@) {
 	# really die
-        my $oops = shift ;
-	warn "$oops" ;
-	$self->{cui}->fatalerror("display_view_list: $oops") ;
-      };
+	warn "$@" ;
+	$self->{cui}->fatalerror("display_view_list: $@") ;
+    }
 
     return $result ;
   }
@@ -1868,6 +1939,27 @@ called without any arguments.
 =head1 AUTHOR
 
 Dominique Dumont, (ddumont at cpan dot org)
+
+=head1 LICENSE
+
+    Copyright (c) 2007-2009 Dominique Dumont.
+
+    This file is part of Config-Model.
+
+    Config-Model is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser Public License as
+    published by the Free Software Foundation; either version 2.1 of
+    the License, or (at your option) any later version.
+
+    Config-Model is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser Public License for more details.
+
+    You should have received a copy of the GNU Lesser Public License
+    along with Config-Model; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+    02110-1301 USA
 
 =head1 SEE ALSO
 
