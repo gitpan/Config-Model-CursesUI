@@ -1,8 +1,8 @@
 # $Author: ddumont $
-# $Date: 2009-01-05 14:02:38 +0100 (Mon, 05 Jan 2009) $
-# $Revision: 825 $
+# $Date: 2009-06-24 12:48:54 +0200 (mer 24 jun 2009) $
+# $Revision: 987 $
 
-#    Copyright (c) 2007-2008 Dominique Dumont.
+#    Copyright (c) 2007-2009 Dominique Dumont.
 #
 #    This file is part of Config-Model-Curses-UI.
 #
@@ -23,7 +23,7 @@
 
 use Module::Build;
 
-require 5.006 ;
+require 5.008 ;
 
 my $build = Module::Build->new
   (
@@ -32,11 +32,13 @@ my $build = Module::Build->new
    dist_abstract => "Curses interface to edit config data through Config::Model",
    dist_author  => "Dominique Dumont (ddumont at cpan dot org)",
    requires => {
-		'Config::Model'    => '0.633',
+		'Config::Model'    => '0.637',
 		'Exception::Class' => 0,
 		'Curses::UI'       => '0.9606',
-		# not yet 'Log::Log4perl'    => 0 ,
 	       },
+   build_requires => {
+		      'Log::Log4perl'    => 0 ,
+		     },
    add_to_cleanup => [qw/stderr.log wr_data/] ,
   );
 

@@ -1,6 +1,6 @@
 # $Author: ddumont $
-# $Date: 2009-01-05 14:02:38 +0100 (Mon, 05 Jan 2009) $
-# $Revision: 825 $
+# $Date: 2009-06-24 12:48:54 +0200 (mer 24 jun 2009) $
+# $Revision: 987 $
 
 my $verb_wiz = 1 ;
 
@@ -26,7 +26,7 @@ use Exception::Class
   ) ;
 
 use vars qw($VERSION) ;
-$VERSION = '1.102';
+$VERSION = '1.103';
 
 my @help_settings = qw/-bg green -fg black -border 1 
                        -titlereverse 0
@@ -1258,8 +1258,8 @@ sub value_info {
 		    '-x' => $x + 15, '-y' => $y++ ) ;
 
     my @items = ();
-    if (defined $leaf->built_in) {
-	push @items, "built_in value: " . $leaf->built_in ;
+    if (defined $leaf->upstream_default) {
+	push @items, "upstream_default value: " . $leaf->upstream_default ;
     }
     elsif (defined $leaf->fetch_standard) {
 	push @items, "default value: " . $leaf->fetch_standard ;

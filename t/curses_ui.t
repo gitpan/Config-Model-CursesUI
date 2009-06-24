@@ -1,8 +1,8 @@
 # -*- cperl -*-
 # $Author: ddumont $
-# $Date: 2008-05-16 13:32:43 +0200 (Fri, 16 May 2008) $
+# $Date: 2009-06-24 12:39:29 +0200 (mer 24 jun 2009) $
 # $Name: not supported by cvs2svn $
-# $Revision: 668 $
+# $Revision: 986 $
 
 use warnings FATAL => qw(all);
 use ExtUtils::testlib;
@@ -11,6 +11,7 @@ use Test::More ;
 use Data::Dumper;
 use Config::Model ;
 use Config::Model::CursesUI ;
+use Log::Log4perl qw(:easy) ;
 
 use strict ;
 
@@ -24,13 +25,17 @@ my $arg = shift || '';
 my $trace = $arg =~ /t/ ? 1 : 0 ;
 $::verbose          = 1 if $arg =~ /v/;
 $::debug            = 1 if $arg =~ /d/;
+
+my $log             = 1 if $arg =~ /l/;
+Log::Log4perl->easy_init($log ? $TRACE: $WARN);
+
 Config::Model::Exception::Any->Trace(1) if $arg =~ /e/;
 
 warn "You can run the GUI with 'i' argument. E.g. 'perl t/curses_ui.t i'\n";
 
 ok(1,"Config::Model::CursesUI loaded") ;
 
-my $model = Config::Model -> new ( legacy => 'ignore' );
+my $model = Config::Model -> new ( );
 
 my $inst = $model->instance (root_class_name => 'Master',
 		  model_file      => 't/test_model.pm',
