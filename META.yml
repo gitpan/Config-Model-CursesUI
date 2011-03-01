@@ -1,23 +1,25 @@
 ---
-name: Config-Model-CursesUI
-version: 1.103
+abstract: 'Curses interface to edit config data through Config::Model'
 author:
-  - Dominique Dumont (ddumont at cpan dot org)
-abstract: Curses interface to edit config data through Config::Model
-license: lgpl
-resources:
-  license: http://opensource.org/licenses/lgpl-license.php
-requires:
-  Config::Model: 0.637
-  Curses::UI: 0.9606
-  Exception::Class: 0
+  - 'Dominique Dumont (ddumont at cpan dot org)'
 build_requires:
   Log::Log4perl: 0
-provides:
-  Config::Model::CursesUI:
-    file: lib/Config/Model/CursesUI.pm
-    version: 1.103
-generated_by: Module::Build version 0.33
+configure_requires:
+  Module::Build: 0.36
+generated_by: 'Module::Build version 0.3624'
+license: lgpl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
+name: Config-Model-CursesUI
+provides:
+  Config::Model::CursesUI:
+    file: lib/Config/Model/CursesUI.pm
+    version: 1.104
+requires:
+  Config::Model: 1.233
+  Curses::UI: 0.9606
+  Exception::Class: 0
+resources:
+  license: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
+version: 1.104
